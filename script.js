@@ -11,6 +11,17 @@
   var rateVal = document.getElementById("rateVal");
   var live = document.getElementById("live");
   var unsupported = document.getElementById("unsupported");
+  var title = document.getElementById("title");
+  var characterBar = document.getElementById("characterBar");
+
+  var CHARACTERS = {
+    tom: { name: "Tom", pitch: 2, rate: 1.2, voiceMatch: /female|zira|samantha|kid|child/i },
+    snowball: { name: "Snowball", pitch: 2, rate: 1.35, voiceMatch: /female|samantha|zira/i },
+    midnight: { name: "Midnight", pitch: 0.6, rate: 0.85, voiceMatch: /male|david|mark|george|james/i },
+    ginger: { name: "Ginger", pitch: 1.4, rate: 1.05, voiceMatch: /female|samantha|zira/i },
+    blueberry: { name: "Blueberry", pitch: 2, rate: 1.4, voiceMatch: /kid|child|female|zira/i }
+  };
+  var currentCharacter = "tom";
 
   var synth = window.speechSynthesis;
   var supportsSpeech = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
@@ -20,6 +31,7 @@
   }
 
   var liveTimer = null;
+  var speechToken = 0;
 
   function updateLabels() {
     pitchVal.textContent = pitch.value;
@@ -35,17 +47,52 @@
     if (!supportsSpeech) return null;
     var voices = synth.getVoices();
     if (!voices || !voices.length) return null;
+    var match = CHARACTERS[currentCharacter] && CHARACTERS[currentCharacter].voiceMatch;
+    if (match) {
+      var themed = voices.find(function (v) { return match.test(v.name); });
+      if (themed) return themed;
+    }
     var preferred = voices.find(function (v) {
       return /female|zira|samantha|kid|child/i.test(v.name);
     });
     return preferred || voices[0];
   }
 
-  function speak() {
+  function applyCharacter(key) {
+    var config = CHARACTERS[key];
+    if (!config) return;
+    currentCharacter = key;
+
+    cat.classList.remove(
+      "character-tom", "character-snowball", "character-midnight",
+      "character-ginger", "character-blueberry"
+    );
+    cat.classList.add("character-" + key);
+    cat.setAttribute("aria-label", "An animated cartoon cat named " + config.name);
+
+    title.textContent = "Talking " + config.name;
+
+    var buttons = characterBar.querySelectorAll(".character");
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].classList.toggle("active", buttons[i].dataset.character === key);
+    }
+
+    pitch.value = config.pitch;
+    rate.value = config.rate;
+    updateLabels();
+
+    try {
+      localStorage.setItem("tom.character", key);
+    } catch (e) {}
+  }
+
+  function speak(options) {
     if (!supportsSpeech) return;
     var text = (input.value || "").trim();
     if (!text) return;
-    speakText(text);
+    options = options || {};
+    if (options.celebrate == null) options.celebrate = true;
+    speakText(text, options);
   }
 
   function speakText(text, options) {
@@ -53,6 +100,8 @@
     options = options || {};
 
     synth.cancel();
+
+    var token = ++speechToken;
 
     var utterance = new SpeechSynthesisUtterance(text);
     utterance.pitch = options.pitch != null ? options.pitch : parseFloat(pitch.value);
@@ -63,16 +112,37 @@
     if (voice) utterance.voice = voice;
 
     utterance.onstart = function () {
+      if (token !== speechToken) return;
       setSpeaking(true);
     };
     utterance.onend = function () {
+      if (token !== speechToken) return;
       setSpeaking(false);
+      if (options.celebrate) celebrate();
     };
     utterance.onerror = function () {
+      if (token !== speechToken) return;
       setSpeaking(false);
     };
 
     synth.speak(utterance);
+  }
+
+  var HOORAY_MS = 1200;
+  var hoorayTimer = null;
+
+  // A little jump-and-cheer once Tom has finished repeating the text.
+  function celebrate() {
+    cat.classList.remove("hooray");
+    void cat.offsetWidth;
+    cat.classList.add("hooray");
+
+    clearTimeout(hoorayTimer);
+    hoorayTimer = setTimeout(function () {
+      cat.classList.remove("hooray");
+    }, HOORAY_MS);
+
+    speakText("Hooray!", { pitch: 2, rate: 1.2 });
   }
 
   var ACTIONS = {
@@ -115,19 +185,28 @@
 
   function stop() {
     if (supportsSpeech) synth.cancel();
+    speechToken++;
     setSpeaking(false);
     clearTimeout(actionTimer);
-    cat.classList.remove("feed", "chill", "hypno", "tickle", "slap");
+    clearTimeout(hoorayTimer);
+    cat.classList.remove("feed", "chill", "hypno", "tickle", "slap", "hooray");
   }
 
   function scheduleLiveSpeak() {
     if (!live.checked) return;
     clearTimeout(liveTimer);
-    liveTimer = setTimeout(speak, 700);
+    liveTimer = setTimeout(function () {
+      speak({ celebrate: false });
+    }, 700);
   }
 
-  speakBtn.addEventListener("click", speak);
+  speakBtn.addEventListener("click", function () { speak(); });
   stopBtn.addEventListener("click", stop);
+
+  characterBar.addEventListener("click", function (e) {
+    var btn = e.target.closest(".character");
+    if (btn) applyCharacter(btn.dataset.character);
+  });
 
   pitch.addEventListener("input", updateLabels);
   rate.addEventListener("input", updateLabels);
@@ -149,5 +228,11 @@
 
   window.addEventListener("beforeunload", stop);
 
+  var savedCharacter = null;
+  try {
+    savedCharacter = localStorage.getItem("tom.character");
+  } catch (e) {}
+
   updateLabels();
+  applyCharacter(CHARACTERS[savedCharacter] ? savedCharacter : "tom");
 })();

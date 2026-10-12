@@ -39,6 +39,29 @@ h1 {
   opacity: 0.85;
 }
 
+.character-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.character {
+  flex: 0 0 auto;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.character.active {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(255, 112, 67, 0.45);
+}
+
 .stage {
   display: flex;
   justify-content: center;
@@ -56,6 +79,95 @@ h1 {
   width: 100%;
   height: auto;
   overflow: visible;
+}
+
+/* character themes: variables drive the SVG colours */
+.cat {
+  --tail: #c9781f;
+  --fur: #f0a63a;
+  --fur-face: #f5b354;
+  --fur-light: #ffd79a;
+  --muzzle: #ffe3b8;
+  --inner-ear: #ff9db3;
+  --cheek: #ff9db3;
+  --nose: #e2647a;
+  --mouth: #7a2b38;
+  --mouth-line: #8a4a2b;
+  --tongue: #ff8a9a;
+  --brow: #a9682a;
+}
+
+.cat .fur { fill: var(--fur); }
+.cat .fur-face { fill: var(--fur-face); }
+.cat .fur-light { fill: var(--fur-light); }
+.cat .muzzle { fill: var(--muzzle); }
+.cat .inner-ear { fill: var(--inner-ear); }
+.cat .cheek { fill: var(--cheek); }
+.cat .nose { fill: var(--nose); }
+.cat .mouth-open { fill: var(--mouth); }
+.cat .mouth-line { stroke: var(--mouth-line); }
+.cat .tongue { fill: var(--tongue); }
+.cat .brow { stroke: var(--brow); }
+.cat .tail path { stroke: var(--tail); }
+
+.cat.character-snowball {
+  --tail: #c9cfd6;
+  --fur: #eef2f6;
+  --fur-face: #f6f8fb;
+  --fur-light: #ffffff;
+  --muzzle: #ffffff;
+  --inner-ear: #ffb3c8;
+  --cheek: #ffb3c8;
+  --nose: #ff7aa2;
+  --mouth: #8a5a68;
+  --mouth-line: #b08a95;
+  --tongue: #ff9fb0;
+  --brow: #b9c2cc;
+}
+
+.cat.character-midnight {
+  --tail: #24242c;
+  --fur: #4a4a57;
+  --fur-face: #565663;
+  --fur-light: #6b6b7a;
+  --muzzle: #7a7a8c;
+  --inner-ear: #a06a7a;
+  --cheek: #c47a92;
+  --nose: #d16a86;
+  --mouth: #2a1a24;
+  --mouth-line: #6a4a56;
+  --tongue: #e08a9a;
+  --brow: #2f2f3a;
+}
+
+.cat.character-ginger {
+  --tail: #a83e18;
+  --fur: #d95a22;
+  --fur-face: #e86a2f;
+  --fur-light: #f2a15e;
+  --muzzle: #ffd0a0;
+  --inner-ear: #ffb08a;
+  --cheek: #ff8a6a;
+  --nose: #b83a2a;
+  --mouth: #6a2418;
+  --mouth-line: #8a3a22;
+  --tongue: #ff8a7a;
+  --brow: #8a3210;
+}
+
+.cat.character-blueberry {
+  --tail: #2f6fa8;
+  --fur: #4f9fd8;
+  --fur-face: #5aabe0;
+  --fur-light: #a8d6f2;
+  --muzzle: #d6ecfa;
+  --inner-ear: #b8a0e8;
+  --cheek: #a0c0f0;
+  --nose: #d16a86;
+  --mouth: #243a5a;
+  --mouth-line: #3a5a7a;
+  --tongue: #ff9fb0;
+  --brow: #2f5a8a;
 }
 
 /* idle animations */
@@ -171,6 +283,30 @@ h1 {
 @keyframes tongue {
   0%, 100% { transform: scaleY(0.1); }
   50% { transform: scaleY(1); }
+}
+
+/* celebration jump after Tom finishes talking */
+.cat.hooray {
+  animation: hoorayJump 1.2s ease-in-out;
+}
+
+.cat.hooray .brow {
+  transform: translateY(-6px) scaleY(1.2);
+}
+
+.cat.hooray .cheek {
+  transform: scale(1.15);
+  opacity: 0.95;
+}
+
+@keyframes hoorayJump {
+  0% { transform: translateY(0) scale(1, 1); }
+  12% { transform: translateY(8px) scale(1.06, 0.9); }
+  32% { transform: translateY(-48px) scale(0.96, 1.09); }
+  50% { transform: translateY(0) scale(1.05, 0.94); }
+  66% { transform: translateY(-26px) scale(0.98, 1.05); }
+  82% { transform: translateY(0) scale(1.02, 0.97); }
+  100% { transform: translateY(0) scale(1, 1); }
 }
 
 /* pet action effects */
@@ -480,6 +616,7 @@ button.primary:hover {
   .cat.hypno,
   .cat.tickle,
   .cat.slap,
+  .cat.hooray,
   .food,
   .heart,
   .star,

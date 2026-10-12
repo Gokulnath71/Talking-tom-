@@ -8,8 +8,16 @@
 </head>
 <body>
   <main class="app">
-    <h1>Talking Tom</h1>
+    <h1 id="title">Talking Tom</h1>
     <p class="subtitle">Type something and Tom will repeat it in a funny cartoon voice!</p>
+
+    <div class="character-bar" id="characterBar" role="group" aria-label="Choose a character">
+      <button type="button" class="character active" data-character="tom">Tom</button>
+      <button type="button" class="character" data-character="snowball">Snowball</button>
+      <button type="button" class="character" data-character="midnight">Midnight</button>
+      <button type="button" class="character" data-character="ginger">Ginger</button>
+      <button type="button" class="character" data-character="blueberry">Blueberry</button>
+    </div>
 
     <div id="unsupported" class="unsupported" hidden>
       Sorry, your browser does not support speech. Try the latest Chrome or Edge.
@@ -24,24 +32,24 @@
           </g>
 
           <!-- body -->
-          <ellipse class="body" cx="170" cy="248" rx="86" ry="60" fill="#f0a63a" />
-          <ellipse cx="170" cy="258" rx="56" ry="42" fill="#ffd79a" />
+          <ellipse class="body fur" cx="170" cy="248" rx="86" ry="60" fill="#f0a63a" />
+          <ellipse class="fur-light" cx="170" cy="258" rx="56" ry="42" fill="#ffd79a" />
 
           <!-- paws -->
-          <ellipse cx="128" cy="296" rx="22" ry="14" fill="#ffd79a" />
-          <ellipse cx="212" cy="296" rx="22" ry="14" fill="#ffd79a" />
+          <ellipse class="fur-light" cx="128" cy="296" rx="22" ry="14" fill="#ffd79a" />
+          <ellipse class="fur-light" cx="212" cy="296" rx="22" ry="14" fill="#ffd79a" />
 
           <!-- head -->
           <g class="head">
             <!-- ears -->
-            <path d="M104 96 L92 40 L150 74 Z" fill="#f0a63a" />
-            <path d="M236 96 L248 40 L190 74 Z" fill="#f0a63a" />
-            <path d="M112 90 L106 58 L140 78 Z" fill="#ff9db3" />
-            <path d="M228 90 L234 58 L200 78 Z" fill="#ff9db3" />
+            <path class="fur" d="M104 96 L92 40 L150 74 Z" fill="#f0a63a" />
+            <path class="fur" d="M236 96 L248 40 L190 74 Z" fill="#f0a63a" />
+            <path class="inner-ear" d="M112 90 L106 58 L140 78 Z" fill="#ff9db3" />
+            <path class="inner-ear" d="M228 90 L234 58 L200 78 Z" fill="#ff9db3" />
 
             <!-- face -->
-            <ellipse class="face" cx="170" cy="140" rx="82" ry="72" fill="#f5b354" />
-            <ellipse cx="170" cy="166" rx="52" ry="40" fill="#ffe3b8" />
+            <ellipse class="face fur-face" cx="170" cy="140" rx="82" ry="72" fill="#f5b354" />
+            <ellipse class="muzzle" cx="170" cy="166" rx="52" ry="40" fill="#ffe3b8" />
 
             <!-- cheeks (light up while talking) -->
             <ellipse class="cheek cheek-left" cx="116" cy="164" rx="17" ry="11" fill="#ff9db3" />
@@ -90,7 +98,7 @@
                   fill="none" stroke="#a9682a" stroke-width="5" stroke-linecap="round" />
 
             <!-- nose + mouth -->
-            <path d="M162 156 L178 156 L170 166 Z" fill="#e2647a" />
+            <path class="nose" d="M162 156 L178 156 L170 166 Z" fill="#e2647a" />
             <g class="mouth">
               <ellipse class="mouth-open" cx="170" cy="184" rx="19" ry="15" fill="#7a2b38" />
               <ellipse class="tongue" cx="170" cy="191" rx="10" ry="7" fill="#ff8a9a" />
