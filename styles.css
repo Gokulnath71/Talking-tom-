@@ -173,6 +173,30 @@ h1 {
   50% { transform: scaleY(1); }
 }
 
+/* celebration jump after Tom finishes talking */
+.cat.hooray {
+  animation: hoorayJump 1.2s ease-in-out;
+}
+
+.cat.hooray .brow {
+  transform: translateY(-6px) scaleY(1.2);
+}
+
+.cat.hooray .cheek {
+  transform: scale(1.15);
+  opacity: 0.95;
+}
+
+@keyframes hoorayJump {
+  0% { transform: translateY(0) scale(1, 1); }
+  12% { transform: translateY(8px) scale(1.06, 0.9); }
+  32% { transform: translateY(-48px) scale(0.96, 1.09); }
+  50% { transform: translateY(0) scale(1.05, 0.94); }
+  66% { transform: translateY(-26px) scale(0.98, 1.05); }
+  82% { transform: translateY(0) scale(1.02, 0.97); }
+  100% { transform: translateY(0) scale(1, 1); }
+}
+
 /* pet action effects */
 .food,
 .hearts,
@@ -480,6 +504,7 @@ button.primary:hover {
   .cat.hypno,
   .cat.tickle,
   .cat.slap,
+  .cat.hooray,
   .food,
   .heart,
   .star,

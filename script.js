@@ -20,6 +20,7 @@
   }
 
   var liveTimer = null;
+  var speechToken = 0;
 
   function updateLabels() {
     pitchVal.textContent = pitch.value;
@@ -41,11 +42,13 @@
     return preferred || voices[0];
   }
 
-  function speak() {
+  function speak(options) {
     if (!supportsSpeech) return;
     var text = (input.value || "").trim();
     if (!text) return;
-    speakText(text);
+    options = options || {};
+    if (options.celebrate == null) options.celebrate = true;
+    speakText(text, options);
   }
 
   function speakText(text, options) {
@@ -53,6 +56,8 @@
     options = options || {};
 
     synth.cancel();
+
+    var token = ++speechToken;
 
     var utterance = new SpeechSynthesisUtterance(text);
     utterance.pitch = options.pitch != null ? options.pitch : parseFloat(pitch.value);
@@ -63,16 +68,37 @@
     if (voice) utterance.voice = voice;
 
     utterance.onstart = function () {
+      if (token !== speechToken) return;
       setSpeaking(true);
     };
     utterance.onend = function () {
+      if (token !== speechToken) return;
       setSpeaking(false);
+      if (options.celebrate) celebrate();
     };
     utterance.onerror = function () {
+      if (token !== speechToken) return;
       setSpeaking(false);
     };
 
     synth.speak(utterance);
+  }
+
+  var HOORAY_MS = 1200;
+  var hoorayTimer = null;
+
+  // A little jump-and-cheer once Tom has finished repeating the text.
+  function celebrate() {
+    cat.classList.remove("hooray");
+    void cat.offsetWidth;
+    cat.classList.add("hooray");
+
+    clearTimeout(hoorayTimer);
+    hoorayTimer = setTimeout(function () {
+      cat.classList.remove("hooray");
+    }, HOORAY_MS);
+
+    speakText("Hooray!", { pitch: 2, rate: 1.2 });
   }
 
   var ACTIONS = {
@@ -115,18 +141,22 @@
 
   function stop() {
     if (supportsSpeech) synth.cancel();
+    speechToken++;
     setSpeaking(false);
     clearTimeout(actionTimer);
-    cat.classList.remove("feed", "chill", "hypno", "tickle", "slap");
+    clearTimeout(hoorayTimer);
+    cat.classList.remove("feed", "chill", "hypno", "tickle", "slap", "hooray");
   }
 
   function scheduleLiveSpeak() {
     if (!live.checked) return;
     clearTimeout(liveTimer);
-    liveTimer = setTimeout(speak, 700);
+    liveTimer = setTimeout(function () {
+      speak({ celebrate: false });
+    }, 700);
   }
 
-  speakBtn.addEventListener("click", speak);
+  speakBtn.addEventListener("click", function () { speak(); });
   stopBtn.addEventListener("click", stop);
 
   pitch.addEventListener("input", updateLabels);
